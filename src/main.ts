@@ -3,6 +3,7 @@ import "./style.css";
 import { Point } from "./ts/primitives/Point";
 import { Graph } from "./ts/Graph";
 import { Segment } from "./ts/primitives/Segment";
+import { GraphEditor } from "./ts/GraphEditor";
 
 const canvasContext = CanvasContext.getInstance();
 const canvas = canvasContext.canvas;
@@ -24,7 +25,15 @@ const s3 = new Segment(p1, p4);
 const s4 = new Segment(p2, p3);
 
 const graph = new Graph([p1, p2, p3, p4], [s1, s2, s3, s4]);
-graph.draw(ctx);
+const graphEditor = new GraphEditor(canvas, graph);
+
+animate();
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  graphEditor.display();
+  requestAnimationFrame(animate);
+}
 
 function removeAll() {
   graph.dispose();

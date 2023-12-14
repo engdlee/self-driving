@@ -14,7 +14,7 @@ export class Graph {
   }
 
   containsPoint(point: Point) {
-    return this.points.find((p) => p.equals(point));
+    return this.points.find((p) => p.equals(point)) !== undefined;
   }
 
   tryAddPoint(point: Point) {
@@ -30,7 +30,7 @@ export class Graph {
   }
 
   containsSegment(seg: Segment) {
-    return this.segments.find((s) => s.equals(seg));
+    return this.segments.find((s) => s.equals(seg)) !== undefined;
   }
 
   tryAddSegment(seg: Segment) {
