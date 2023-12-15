@@ -43,3 +43,9 @@ export interface Graph {
   dispose: () => void;
   draw: (ctx: CanvasRenderingContext2D) => void;
 }
+
+export interface Viewport {
+  canvas: HTMLCanvasElement;
+  zoom: number;
+  getMouse: (evt: MouseEvent, subtractDragOffset?: boolean) => Point;
+}

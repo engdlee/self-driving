@@ -1,7 +1,7 @@
-import { Graph } from "../types/types";
-import { Point } from "./primitives/Point";
-import { Segment } from "./primitives/Segment";
-import { getNearestPoint } from "./utils";
+import { Graph, Viewport } from '../types/types';
+import { Point } from './primitives/Point';
+import { Segment } from './primitives/Segment';
+import { getNearestPoint } from './utils';
 
 export class GraphEditor {
   canvas: HTMLCanvasElement;
@@ -11,12 +11,14 @@ export class GraphEditor {
   hovered: Point | null;
   dragging: boolean;
   mouse: Point | null;
+  viewport: Viewport;
 
-  constructor(canvas: HTMLCanvasElement, graph: Graph) {
-    this.canvas = canvas;
+  constructor(viewport: Viewport, graph: Graph) {
+    this.viewport = viewport;
+    this.canvas = viewport.canvas;
     this.graph = graph;
 
-    this.ctx = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+    this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 
     this.selected = null;
     this.hovered = null;
@@ -27,11 +29,11 @@ export class GraphEditor {
   }
 
   #addEventListeners() {
-    this.canvas.addEventListener("mousedown", this.#handleMouseDown.bind(this));
+    this.canvas.addEventListener('mousedown', this.#handleMouseDown.bind(this));
     // show hovered point
-    this.canvas.addEventListener("mousemove", this.#handleMouseMove.bind(this));
-    this.canvas.addEventListener("contextmenu", (evt) => evt.preventDefault());
-    this.canvas.addEventListener("mouseup", () => (this.dragging = false));
+    this.canvas.addEventListener('mousemove', this.#handleMouseMove.bind(this));
+    this.canvas.addEventListener('contextmenu', (evt) => evt.preventDefault());
+    this.canvas.addEventListener('mouseup', () => (this.dragging = false));
   }
 
   #handleMouseDown(evt: MouseEvent) {
@@ -63,8 +65,12 @@ export class GraphEditor {
   }
 
   #handleMouseMove(evt: MouseEvent) {
-    this.mouse = new Point(evt.offsetX, evt.offsetY);
-    this.hovered = getNearestPoint(this.mouse, this.graph.points, 10);
+    this.mouse = this.viewport.getMouse(evt, true);
+    this.hovered = getNearestPoint(
+      this.mouse,
+      this.graph.points,
+      10 * this.viewport.zoom
+    );
     //if we are moving
     if (this.dragging && this.selected) {
       this.selected.x = this.mouse.x;
@@ -85,6 +91,12 @@ export class GraphEditor {
     if (this.selected == point) {
       this.selected = null;
     }
+  }
+
+  dispose() {
+    this.graph.dispose();
+    this.selected = null;
+    this.hovered = null;
   }
 
   display() {

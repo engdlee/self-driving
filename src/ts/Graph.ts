@@ -1,23 +1,38 @@
-import { Point, Segment } from "../types/types";
+import { Point as IPoint, Segment as ISegment } from '../types/types';
+import { Point } from './primitives/Point';
+import { Segment } from './primitives/Segment';
 
 export class Graph {
-  points: Point[];
-  segments: Segment[];
+  points: IPoint[];
+  segments: ISegment[];
 
-  constructor(points: Point[] = [], segments: Segment[] = []) {
+  constructor(points: IPoint[] = [], segments: ISegment[] = []) {
     this.points = points;
     this.segments = segments;
   }
 
-  addPoint(point: Point) {
+  static load(info: { points: IPoint[]; segments: ISegment[] }) {
+    const points = info.points.map((i) => new Point(i.x, i.y));
+    const segments = info.segments.map(
+      (i) =>
+        new Segment(
+          points.find((p) => p.equals(i.p1)) as IPoint,
+          points.find((p) => p.equals(i.p2)) as IPoint
+        )
+    );
+
+    return new Graph(points, segments);
+  }
+
+  addPoint(point: IPoint) {
     this.points.push(point);
   }
 
-  containsPoint(point: Point) {
+  containsPoint(point: IPoint) {
     return this.points.find((p) => p.equals(point)) !== undefined;
   }
 
-  tryAddPoint(point: Point) {
+  tryAddPoint(point: IPoint) {
     if (!this.containsPoint(point)) {
       this.addPoint(point);
       return true;
@@ -25,15 +40,15 @@ export class Graph {
     return false;
   }
 
-  addSegment(seg: Segment) {
+  addSegment(seg: ISegment) {
     this.segments.push(seg);
   }
 
-  containsSegment(seg: Segment) {
+  containsSegment(seg: ISegment) {
     return this.segments.find((s) => s.equals(seg)) !== undefined;
   }
 
-  tryAddSegment(seg: Segment) {
+  tryAddSegment(seg: ISegment) {
     if (!this.containsSegment(seg) && !seg.p1.equals(seg.p2)) {
       this.addSegment(seg);
       return true;
@@ -41,7 +56,7 @@ export class Graph {
     return false;
   }
 
-  removePoint(point: Point) {
+  removePoint(point: IPoint) {
     const segs = this.getSegmentsWithPoint(point);
     for (const seg of segs) {
       this.removeSegment(seg);
@@ -49,11 +64,11 @@ export class Graph {
     this.points.splice(this.points.indexOf(point), 1);
   }
 
-  removeSegment(seg: Segment) {
+  removeSegment(seg: ISegment) {
     this.segments.splice(this.segments.indexOf(seg), 1);
   }
 
-  getSegmentsWithPoint(point: Point) {
+  getSegmentsWithPoint(point: IPoint) {
     const segs = [];
     for (const seg of this.segments) {
       if (seg.includes(point)) {
