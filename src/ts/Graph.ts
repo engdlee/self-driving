@@ -1,4 +1,4 @@
-import { Point as IPoint, Segment as ISegment } from '../types/types';
+import { IPoint, ISegment } from '../types/types';
 import { Point } from './primitives/Point';
 import { Segment } from './primitives/Segment';
 

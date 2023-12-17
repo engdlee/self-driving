@@ -5,10 +5,10 @@ export interface PointStyle {
   fill?: boolean;
 }
 
-export interface Point {
+export interface IPoint {
   x: number;
   y: number;
-  equals: (point: Point) => boolean;
+  equals: (point: IPoint) => boolean;
   draw: (ctx: CanvasRenderingContext2D, pointStyle?: PointStyle) => void;
 }
 export interface SegmentDrawStyle {
@@ -17,35 +17,59 @@ export interface SegmentDrawStyle {
   dash?: number[];
 }
 
-export interface Segment {
-  p1: Point;
-  p2: Point;
-  equals: (seg: Segment) => boolean;
-  includes: (point: Point) => boolean;
+export interface ISegment {
+  p1: IPoint;
+  p2: IPoint;
+  equals: (seg: ISegment) => boolean;
+  includes: (point: IPoint) => boolean;
   draw: (
     ctx: CanvasRenderingContext2D,
     segmentDrawStyle?: SegmentDrawStyle
   ) => void;
 }
 
-export interface Graph {
-  points: Point[];
-  segments: Segment[];
-  addPoint: (point: Point) => void;
-  containsPoint: (point: Point) => boolean | undefined;
-  tryAddPoint: (point: Point) => boolean;
-  addSegment: (seg: Segment) => void;
-  containsSegment: (seg: Segment) => boolean | undefined;
-  tryAddSegment: (seg: Segment) => boolean;
-  removePoint: (point: Point) => void;
-  removeSegment: (seg: Segment) => void;
-  getSegmentsWithPoint: (point: Point) => Segment[];
+export interface IGraph {
+  points: IPoint[];
+  segments: ISegment[];
+  addPoint: (point: IPoint) => void;
+  containsPoint: (point: IPoint) => boolean | undefined;
+  tryAddPoint: (point: IPoint) => boolean;
+  addSegment: (seg: ISegment) => void;
+  containsSegment: (seg: ISegment) => boolean | undefined;
+  tryAddSegment: (seg: ISegment) => boolean;
+  removePoint: (point: IPoint) => void;
+  removeSegment: (seg: ISegment) => void;
+  getSegmentsWithPoint: (point: IPoint) => ISegment[];
   dispose: () => void;
   draw: (ctx: CanvasRenderingContext2D) => void;
 }
 
-export interface Viewport {
+export interface IViewport {
   canvas: HTMLCanvasElement;
   zoom: number;
-  getMouse: (evt: MouseEvent, subtractDragOffset?: boolean) => Point;
+  getMouse: (evt: MouseEvent, subtractDragOffset?: boolean) => IPoint;
+}
+
+export interface IPolygonDrawStyle {
+  stroke?: string;
+  lineWidth?: number;
+  fill?: string;
+}
+export interface IPolygon {
+  points: IPoint[];
+  segments: ISegment[];
+  containsSegment: (seg: ISegment) => boolean;
+  containsPoint: (point: IPoint) => boolean;
+  drawSegments: (ctx: CanvasRenderingContext2D) => void;
+  draw: (
+    ctx: CanvasRenderingContext2D,
+    polygonDrawStyle?: IPolygonDrawStyle
+  ) => void;
+}
+
+export interface IEnvelope {
+  skeleton: ISegment;
+  poly: IPolygon | null;
+  roundness: number;
+  draw: (ctx: CanvasRenderingContext2D, options: IPolygonDrawStyle) => void;
 }

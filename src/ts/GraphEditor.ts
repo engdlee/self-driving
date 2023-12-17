@@ -1,19 +1,18 @@
-import { Graph, Viewport } from '../types/types';
-import { Point } from './primitives/Point';
+import { IGraph, IPoint, IViewport } from '../types/types';
 import { Segment } from './primitives/Segment';
 import { getNearestPoint } from './utils';
 
 export class GraphEditor {
   canvas: HTMLCanvasElement;
-  graph: Graph;
+  graph: IGraph;
   ctx: CanvasRenderingContext2D;
-  selected: Point | null;
-  hovered: Point | null;
+  selected: IPoint | null;
+  hovered: IPoint | null;
   dragging: boolean;
-  mouse: Point | null;
-  viewport: Viewport;
+  mouse: IPoint | null;
+  viewport: IViewport;
 
-  constructor(viewport: Viewport, graph: Graph) {
+  constructor(viewport: IViewport, graph: IGraph) {
     this.viewport = viewport;
     this.canvas = viewport.canvas;
     this.graph = graph;
@@ -78,14 +77,14 @@ export class GraphEditor {
     }
   }
 
-  #select(point: Point) {
+  #select(point: IPoint) {
     if (this.selected) {
       this.graph.tryAddSegment(new Segment(this.selected, point));
     }
     this.selected = point;
   }
 
-  #removePoint(point: Point) {
+  #removePoint(point: IPoint) {
     this.graph.removePoint(point);
     this.hovered = null;
     if (this.selected == point) {

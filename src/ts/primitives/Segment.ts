@@ -1,10 +1,10 @@
-import { Point } from "../../types/types";
+import { IPoint } from '../../types/types';
 
 export class Segment {
-  p1: Point;
-  p2: Point;
+  p1: IPoint;
+  p2: IPoint;
 
-  constructor(p1: Point, p2: Point) {
+  constructor(p1: IPoint, p2: IPoint) {
     this.p1 = p1;
     this.p2 = p2;
   }
@@ -13,13 +13,13 @@ export class Segment {
     return this.includes(seg.p1) && this.includes(seg.p2);
   }
 
-  includes(point: Point) {
+  includes(point: IPoint) {
     return this.p1.equals(point) || this.p2.equals(point);
   }
 
   draw(
     ctx: CanvasRenderingContext2D,
-    { width = 2, color = "black", dash = [] as number[] } = {}
+    { width = 2, color = 'black', dash = [] as number[] } = {}
   ) {
     ctx.beginPath();
     ctx.lineWidth = width;
