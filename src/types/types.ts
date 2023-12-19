@@ -20,8 +20,12 @@ export interface SegmentDrawStyle {
 export interface ISegment {
   p1: IPoint;
   p2: IPoint;
+  length: () => number;
+  directionVector: () => IPoint;
   equals: (seg: ISegment) => boolean;
   includes: (point: IPoint) => boolean;
+  distanceToPoint: (point: IPoint) => number;
+  projectPoint: (point: IPoint) => { point: IPoint; offset: number };
   draw: (
     ctx: CanvasRenderingContext2D,
     segmentDrawStyle?: SegmentDrawStyle
@@ -32,6 +36,7 @@ export interface IGraph {
   points: IPoint[];
   segments: ISegment[];
   addPoint: (point: IPoint) => void;
+  hash: () => string;
   containsPoint: (point: IPoint) => boolean | undefined;
   tryAddPoint: (point: IPoint) => boolean;
   addSegment: (seg: ISegment) => void;
@@ -58,8 +63,11 @@ export interface IPolygonDrawStyle {
 export interface IPolygon {
   points: IPoint[];
   segments: ISegment[];
+  intersectsPoly: (poly: IPolygon) => boolean;
   containsSegment: (seg: ISegment) => boolean;
   containsPoint: (point: IPoint) => boolean;
+  distanceToPoint: (point: IPoint) => number;
+  distanceToPoly: (poly: IPolygon) => number;
   drawSegments: (ctx: CanvasRenderingContext2D) => void;
   draw: (
     ctx: CanvasRenderingContext2D,

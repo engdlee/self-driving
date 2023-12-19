@@ -26,6 +26,10 @@ export function average(p1: IPoint, p2: IPoint) {
   return new Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
 }
 
+export function dot(p1: IPoint, p2: IPoint) {
+  return p1.x * p2.x + p1.y * p2.y;
+}
+
 export function add(p1: IPoint, p2: IPoint) {
   return new Point(p1.x + p2.x, p1.y + p2.y);
 }
@@ -36,6 +40,14 @@ export function subtract(p1: IPoint, p2: IPoint) {
 
 export function scale(p: Point, scaler: number) {
   return new Point(p.x * scaler, p.y * scaler);
+}
+
+export function normalize(p: IPoint) {
+  return scale(p, 1 / magnitude(p));
+}
+
+export function magnitude(p: IPoint) {
+  return Math.hypot(p.x, p.y);
 }
 
 export function translate(loc: IPoint, angle: number, offset: number) {
@@ -54,7 +66,8 @@ export function getIntersection(A: IPoint, B: IPoint, C: IPoint, D: IPoint) {
   const uTop = (C.y - A.y) * (A.x - B.x) - (C.x - A.x) * (A.y - B.y);
   const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
 
-  if (bottom != 0) {
+  const eps = 0.001;
+  if (Math.abs(bottom) > eps) {
     const t = tTop / bottom;
     const u = uTop / bottom;
 
