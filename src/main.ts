@@ -8,6 +8,7 @@ import { Viewport } from './ts/Viewport';
 import { Polygon } from './ts/primitives/Polygon';
 import { Envelope } from './ts/primitives/Envelope';
 import { World } from './ts/World';
+import { scale } from './ts/utils';
 
 const canvasContext = CanvasContext.getInstance();
 const canvas = canvasContext.canvas;
@@ -34,7 +35,8 @@ function animate() {
     world.generate();
     oldGraphHash = graph.hash();
   }
-  world.draw(ctx);
+  const viewPoint = scale(viewport.getOffset(), -1);
+  world.draw(ctx, viewPoint);
   ctx.globalAlpha = 0.3;
   graphEditor.display();
   requestAnimationFrame(animate);

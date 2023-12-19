@@ -1,4 +1,14 @@
-import { IEnvelope, IGraph, IPoint, IPolygon, ISegment } from '../types/types';
+import {
+  IBuilding,
+  IEnvelope,
+  IGraph,
+  IPoint,
+  IPolygon,
+  ISegment,
+  ITree,
+} from '../types/types';
+import { Building } from './items/Building';
+import { Tree } from './items/Tree';
 import { Envelope } from './primitives/Envelope';
 import { Point } from './primitives/Point';
 import { Polygon } from './primitives/Polygon';
@@ -14,8 +24,8 @@ export class World {
   buildingWidth: number;
   buildingMinLength: number;
   spacing: number;
-  buildings: IPolygon[];
-  trees: IPoint[];
+  buildings: IBuilding[];
+  trees: ITree[];
   treeSize: number;
   //   intersections: IPoint[];
 
@@ -55,14 +65,14 @@ export class World {
     this.roadBorders = Polygon.union(
       this.envelopes.map((e) => e.poly) as IPolygon[]
     );
-    this.buildings = this.#generateBuildings() as IPolygon[];
+    this.buildings = this.#generateBuildings() as IBuilding[];
     this.trees = this.#generateTrees();
   }
 
   #generateTrees() {
     const points = [
       ...this.roadBorders.map((s) => [s.p1, s.p2]).flat(),
-      ...this.buildings.map((b) => b.points).flat(),
+      ...this.buildings.map((b) => b.base.points).flat(),
     ];
 
     const left = Math.min(...points.map((p) => p.x));
@@ -71,11 +81,11 @@ export class World {
     const bottom = Math.max(...points.map((p) => p.y));
 
     const illegalPolys = [
-      ...this.buildings,
+      ...this.buildings.map((b) => b.base),
       ...this.envelopes.map((e) => e.poly),
     ];
 
-    const trees: IPoint[] = [];
+    const trees: ITree[] = [];
     let tryCount = 0;
     while (tryCount < 100) {
       const p = new Point(
@@ -98,7 +108,7 @@ export class World {
       // check if tree too close to other trees
       if (keep) {
         for (const tree of trees) {
-          if (distance(tree, p) < this.treeSize) {
+          if (distance(tree.center, p) < this.treeSize) {
             keep = false;
             break;
           }
@@ -118,7 +128,7 @@ export class World {
       }
 
       if (keep) {
-        trees.push(p);
+        trees.push(new Tree(p, this.treeSize));
         tryCount = 0;
       }
       tryCount++;
@@ -186,10 +196,10 @@ export class World {
       }
     }
 
-    return bases;
+    return bases.map((b) => new Building(b as IPolygon));
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, viewPoint: IPoint) {
     for (const env of this.envelopes) {
       env.draw(ctx, { fill: '#BBB', stroke: '#BBB' });
     }
@@ -199,11 +209,14 @@ export class World {
     for (const seg of this.roadBorders) {
       seg.draw(ctx, { color: 'white', width: 4 });
     }
-    for (const tree of this.trees) {
-      tree.draw(ctx, { size: this.treeSize, color: 'rgba(0,0,0,0.5)' });
-    }
-    for (const bld of this.buildings) {
-      bld.draw(ctx);
+
+    const items = [...this.buildings, ...this.trees];
+    items.sort(
+      (a, b) =>
+        b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint)
+    );
+    for (const item of items) {
+      item.draw(ctx, viewPoint);
     }
   }
 }

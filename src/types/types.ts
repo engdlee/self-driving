@@ -81,3 +81,16 @@ export interface IEnvelope {
   roundness: number;
   draw: (ctx: CanvasRenderingContext2D, options: IPolygonDrawStyle) => void;
 }
+
+export interface ITree {
+  center: IPoint;
+  size: number;
+  base: IPolygon;
+  draw: (ctx: CanvasRenderingContext2D, viewPoint: IPoint) => void;
+}
+
+export interface IBuilding {
+  base: IPolygon;
+  heightCoef: number;
+  draw: (ctx: CanvasRenderingContext2D, viewPoint: IPoint) => void;
+}
